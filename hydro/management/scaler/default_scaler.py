@@ -42,7 +42,7 @@ class DefaultScaler(BaseScaler):
         cap = {
             "batching-benchmark": 4
         }
-        for dag_name, highest in cap.values():
+        for dag_name, highest in cap.items():
             if dag_name in fname:
                 if existing_replicas >= highest:
                     logging.info(f"Skip scaling {fname} because it already"
