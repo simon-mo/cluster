@@ -104,7 +104,6 @@ class DefaultHydroPolicy(BaseHydroPolicy):
                                                self.function_locations,
                                                cpu_executors, gpu_executors)
             elif call_count < thruput * .1:
-                pass
                 # Similarly, we check to see if the call count is significantly
                 # below the achieved throughput -- we then remove replicas.
 
@@ -112,10 +111,10 @@ class DefaultHydroPolicy(BaseHydroPolicy):
                 # haven't gathered the count across all executors
                 decrease = math.ceil((call_count / thruput) * num_replicas) + 1
                 logging.info(('Function %s: %d calls in recent period under ' +
-                              'threshold. Reducing to %d replicas.') %
+                              'threshold. Reducing to %d replicas. This is a dry run.') %
                              (fname, call_count, decrease))
-                self.scaler.dereplicate_function(fname, decrease,
-                                                 self.function_locations)
+                # self.scaler.dereplicate_function(fname, decrease,
+                #                                  self.function_locations)
             elif fname in self.latency_history:
                 # Next, we look at historical perceived latency of requests
                 # -- if the request is spending more time in the system than it

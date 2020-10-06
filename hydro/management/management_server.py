@@ -40,8 +40,10 @@ REPORT_PERIOD = 5
 
 PIN_ACCEPT_PORT = '5010'
 
-logging.basicConfig(filename='log_management.txt', level=logging.INFO,
-                    format='%(asctime)s %(message)s')
+logging.basicConfig(
+                    # filename='log_management.txt',
+                    level=logging.INFO,
+                    format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s')
 
 
 def run(self_ip):
@@ -274,7 +276,8 @@ def run(self_ip):
             policy.replica_policy(function_frequencies, function_runtimes,
                                   dag_runtimes, executor_statuses,
                                   arrival_times)
-            policy.executor_policy(executor_statuses, departing_executors)
+            # TODO(simon): this turn off node scaling policy, which is what we want for static exp env
+            # policy.executor_policy(executor_statuses, departing_executors)
 
             # Clears all metadata that was passed in for this epoch.
             function_runtimes.clear()

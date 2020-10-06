@@ -39,6 +39,20 @@ class DefaultScaler(BaseScaler):
 
         existing_replicas = function_locations[fname]
 
+        cap = {
+            "batching-benchmark": 4
+        }
+        for dag_name, highest in cap.values():
+            if dag_name in fname:
+                if existing_replicas >= highest:
+                    logging.info(f"Skip scaling {fname} because it already"
+                                 f" have {existing_replicas}. The cap is {cap}.")
+                    return
+                if existing_replicas + num_replicas > highest:
+                    num_replicas = highest - existing_replicas
+
+        logging.info(f"Adding {num_replicas} replicas")
+
         msg = PinFunction()
         msg.name = fname
         msg.response_address = self.ip
