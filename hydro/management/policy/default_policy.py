@@ -185,6 +185,15 @@ class DefaultHydroPolicy(BaseHydroPolicy):
             # start the grace period after adding nodes
             self.grace_start = time.time()
 
+        cpu_executors = set()
+        gpu_executors = set()
+        for key in executor_statuses:
+            status = executor_statuses[key]
+            if status.type == CPU:
+                cpu_executors.add(key)
+            else:
+                gpu_executors.add(key)
+
         # We also look at any individual nodes that might be overloaded. Since
         # we currently only pin one function per node, that means that function
         # is very expensive, so we proactively replicate it onto two other
@@ -199,7 +208,7 @@ class DefaultHydroPolicy(BaseHydroPolicy):
                 for fname in status.functions:
                     self.scaler.replicate_function(fname, 2,
                                                    self.function_locations,
-                                                   executors)
+                                                   cpu_executors, gpu_executors)
 
         # We only decide to kill nodes if they are underutilized and if there
         # are at least 5 executors in the system -- we never scale down past
