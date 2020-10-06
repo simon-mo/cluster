@@ -38,18 +38,19 @@ class DefaultScaler(BaseScaler):
                            cpu_executors, gpu_executors):
 
         existing_replicas = function_locations[fname]
+        curr_replicas = len(existing_replicas)
 
         cap = {
             "batching-benchmark": 4
         }
         for dag_name, highest in cap.items():
             if dag_name in fname:
-                if existing_replicas >= highest:
+                if curr_replicas >= highest:
                     logging.info(f"Skip scaling {fname} because it already"
-                                 f" have {existing_replicas}. The cap is {cap}.")
+                                 f" have {curr_replicas}. The cap is {cap}.")
                     return
-                if existing_replicas + num_replicas > highest:
-                    num_replicas = highest - existing_replicas
+                if curr_replicas + num_replicas > highest:
+                    num_replicas = highest - curr_replicas
 
         logging.info(f"Adding {num_replicas} replicas")
 
