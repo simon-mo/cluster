@@ -24,7 +24,9 @@ from hydro.management.util import (
 from hydro.management.scaler.base_scaler import BaseScaler
 from hydro.shared.proto.internal_pb2 import PinFunction
 from hydro.shared.proto.cloudburst_pb2 import GenericResponse
-
+import redis
+import os
+import json
 
 class DefaultScaler(BaseScaler):
     def __init__(self, ip, ctx, add_socket, remove_socket, pin_accept_socket):
@@ -33,6 +35,13 @@ class DefaultScaler(BaseScaler):
         self.add_socket = add_socket
         self.remove_socket = remove_socket
         self.pin_accept_socket = pin_accept_socket
+        self.r = redis.Redis("34.239.175.232", 9999,
+                             password=os.getenv("REDIS_PASSWORD"),
+                             decode_responses=True)
+        self.cap = {}
+
+    def update_limit(self):
+        self.cap = json.loads(self.r.get("RESOURCE_LIMIT") or "{}")
 
     def replicate_function(self, fname, num_replicas, function_locations,
                            cpu_executors, gpu_executors):
@@ -40,19 +49,17 @@ class DefaultScaler(BaseScaler):
         existing_replicas = function_locations[fname]
         curr_replicas = len(existing_replicas)
 
-        cap = {
-            "batching-benchmark": 4
-        }
-        for dag_name, highest in cap.items():
+        self.update_limit()
+        for dag_name, highest in self.cap.items():
             if dag_name in fname:
                 if curr_replicas >= highest:
                     logging.info(f"Skip scaling {fname} because it already"
-                                 f" have {curr_replicas}. The cap is {cap}.")
+                                 f" have {curr_replicas}. The cap is {self.cap}.")
                     return
                 if curr_replicas + num_replicas > highest:
                     num_replicas = highest - curr_replicas
 
-        logging.info(f"Adding {num_replicas} replicas")
+        logging.info(f"Adding {num_replicas} replicas for {fname}")
 
         msg = PinFunction()
         msg.name = fname

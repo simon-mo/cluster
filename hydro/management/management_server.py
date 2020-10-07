@@ -181,7 +181,7 @@ def run(self_ip):
                     continue
 
                 executor_statuses[key] = status
-                logging.info(('Received thread status update from %s:%d: %.4f ' +
+                logging.debug(('Received thread status update from %s:%d: %.4f ' +
                               'occupancy, %d functions pinned') %
                              (status.ip, status.tid, status.utilization,
                               len(status.functions)))
@@ -268,7 +268,7 @@ def run(self_ip):
 
         end = time.time()
         if end - start > REPORT_PERIOD:
-            logging.info('Checking hash ring...')
+            logging.debug('Checking hash ring...')
             check_hash_ring(client, context)
 
             # Invoke the configured policy to check system load and respond
@@ -342,7 +342,7 @@ def check_hash_ring(client, context):
             if node.private_ip not in ebs_ips:
                 departed.append(('1', node))
 
-    logging.info('Found %d departed nodes.' % (len(departed)))
+    logging.debug('Found %d departed nodes.' % (len(departed)))
     mon_ips = util.get_pod_ips(client, 'role=monitoring')
     storage_ips = mem_ips + ebs_ips
 
