@@ -181,10 +181,12 @@ def run(self_ip):
                     continue
 
                 executor_statuses[key] = status
-                logging.info(('Received thread status update from %s:%d: %.4f ' +
-                              'occupancy, %d functions pinned') %
-                             (status.ip, status.tid, status.utilization,
-                              len(status.functions)))
+                # logging.info(('Received thread status update from %s:%d: %.4f ' +
+                #               'occupancy, %d functions pinned') %
+                #              (status.ip, status.tid, status.utilization,
+                #               len(status.functions)))
+                logging.info(f"Functions {status.functions} is placed on node "
+                             f"{status.ip}:{status.tid}")
 
         if (list_schedulers_socket in socks and
                 socks[list_schedulers_socket] == zmq.POLLIN):
