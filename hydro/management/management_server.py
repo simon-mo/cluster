@@ -181,7 +181,7 @@ def run(self_ip):
                     continue
 
                 executor_statuses[key] = status
-                logging.debug(('Received thread status update from %s:%d: %.4f ' +
+                logging.info(('Received thread status update from %s:%d: %.4f ' +
                               'occupancy, %d functions pinned') %
                              (status.ip, status.tid, status.utilization,
                               len(status.functions)))
