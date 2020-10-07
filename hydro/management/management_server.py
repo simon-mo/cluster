@@ -268,7 +268,7 @@ def run(self_ip):
 
         end = time.time()
         if end - start > REPORT_PERIOD:
-            logging.debug('Checking hash ring...')
+            logging.info('Checking hash ring...')
             check_hash_ring(client, context)
 
             # Invoke the configured policy to check system load and respond
